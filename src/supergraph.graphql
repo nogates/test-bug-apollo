@@ -1,0 +1,326 @@
+schema
+  @link(url: "https://specs.apollo.dev/link/v1.0")
+  @link(url: "https://specs.apollo.dev/join/v0.5", for: EXECUTION)
+  @link(url: "https://specs.apollo.dev/inaccessible/v0.2", for: SECURITY) {
+  query: Query
+}
+
+directive @inaccessible on FIELD_DEFINITION | OBJECT | INTERFACE | UNION | ARGUMENT_DEFINITION | SCALAR | ENUM | ENUM_VALUE | INPUT_OBJECT | INPUT_FIELD_DEFINITION
+
+directive @join__directive(
+  graphs: [join__Graph!]
+  name: String!
+  args: join__DirectiveArguments
+) repeatable on SCHEMA | OBJECT | INTERFACE | FIELD_DEFINITION
+
+directive @join__enumValue(graph: join__Graph!) repeatable on ENUM_VALUE
+
+directive @join__field(
+  graph: join__Graph
+  requires: join__FieldSet
+  provides: join__FieldSet
+  type: String
+  external: Boolean
+  override: String
+  usedOverridden: Boolean
+  overrideLabel: String
+  contextArguments: [join__ContextArgument!]
+) repeatable on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
+
+directive @join__graph(name: String!, url: String!) on ENUM_VALUE
+
+directive @join__implements(
+  graph: join__Graph!
+  interface: String!
+) repeatable on OBJECT | INTERFACE
+
+directive @join__type(
+  graph: join__Graph!
+  key: join__FieldSet
+  extension: Boolean! = false
+  resolvable: Boolean! = true
+  isInterfaceObject: Boolean! = false
+) repeatable on OBJECT | INTERFACE | UNION | ENUM | INPUT_OBJECT | SCALAR
+
+directive @join__unionMember(
+  graph: join__Graph!
+  member: String!
+) repeatable on UNION
+
+directive @link(
+  url: String
+  as: String
+  for: link__Purpose
+  import: [link__Import]
+) repeatable on SCHEMA
+
+type Agent implements User
+  @join__implements(graph: PRODUCT_1_, interface: "User")
+  @join__type(graph: PRODUCT_1_, key: "id", resolvable: true) {
+  email: String
+  id: ID!
+  name: String
+}
+
+type BakAccountMetadata implements ProductMetadata
+  @join__implements(graph: PRODUCT_1_, interface: "ProductMetadata")
+  @join__implements(graph: PRODUCT_2_, interface: "ProductMetadata")
+  @join__type(graph: PRODUCT_1_)
+  @join__type(graph: PRODUCT_2_) {
+  id: ID!
+  createdAt: String!
+  createdBy: User
+}
+
+type BakAccountValue implements ProductMetadataValue
+  @join__implements(graph: PRODUCT_1_, interface: "ProductMetadataValue")
+  @join__implements(graph: PRODUCT_2_, interface: "ProductMetadataValue")
+  @join__type(graph: PRODUCT_1_, key: "_fieldId _productId")
+  @join__type(graph: PRODUCT_2_, key: "_fieldId _productId") {
+  _fieldId: ID! @inaccessible
+  _productId: ID! @inaccessible
+  iban: String!
+  productMetadata: BakAccountMetadata!
+}
+
+type Computer implements Product
+  @join__implements(graph: PRODUCT_1_, interface: "Product")
+  @join__implements(graph: PRODUCT_2_, interface: "Product")
+  @join__type(graph: PRODUCT_1_, key: "id")
+  @join__type(graph: PRODUCT_2_, key: "id") {
+  id: ID!
+  description: String @join__field(graph: PRODUCT_1_)
+  metadata: [ProductMetadataValue!]!
+    @join__field(graph: PRODUCT_1_, usedOverridden: true)
+    @join__field(graph: PRODUCT_2_, override: "product-1")
+  cpu: String @join__field(graph: PRODUCT_1_)
+}
+
+type CreaditCardMetadata implements ProductMetadata
+  @join__implements(graph: PRODUCT_1_, interface: "ProductMetadata")
+  @join__implements(graph: PRODUCT_2_, interface: "ProductMetadata")
+  @join__type(graph: PRODUCT_1_)
+  @join__type(graph: PRODUCT_2_) {
+  id: ID!
+  createdAt: String!
+  createdBy: User
+}
+
+type CreaditCardValue implements ProductMetadataValue
+  @join__implements(graph: PRODUCT_1_, interface: "ProductMetadataValue")
+  @join__implements(graph: PRODUCT_2_, interface: "ProductMetadataValue")
+  @join__type(graph: PRODUCT_1_, key: "_fieldId _productId")
+  @join__type(graph: PRODUCT_2_, key: "_fieldId _productId") {
+  _fieldId: ID! @inaccessible
+  _productId: ID! @inaccessible
+  creditCardNumber: String!
+  productMetadata: CreaditCardMetadata!
+}
+
+type Customer implements User
+  @join__implements(graph: PRODUCT_1_, interface: "User")
+  @join__type(graph: PRODUCT_1_, key: "id", resolvable: true) {
+  id: ID!
+  pepein: String
+  email: String
+  name: String
+}
+
+type DateMetadata implements ProductMetadata
+  @join__implements(graph: PRODUCT_1_, interface: "ProductMetadata")
+  @join__implements(graph: PRODUCT_2_, interface: "ProductMetadata")
+  @join__type(graph: PRODUCT_1_)
+  @join__type(graph: PRODUCT_2_) {
+  id: ID!
+  createdAt: String!
+  createdBy: User
+}
+
+type DateValue implements ProductMetadataValue
+  @join__implements(graph: PRODUCT_1_, interface: "ProductMetadataValue")
+  @join__implements(graph: PRODUCT_2_, interface: "ProductMetadataValue")
+  @join__type(graph: PRODUCT_1_, key: "_fieldId _productId")
+  @join__type(graph: PRODUCT_2_, key: "_fieldId _productId") {
+  _fieldId: ID! @inaccessible
+  _productId: ID! @inaccessible
+  date: String!
+  productMetadata: DateMetadata!
+}
+
+type DropDownMetadata implements ProductMetadata
+  @join__implements(graph: PRODUCT_1_, interface: "ProductMetadata")
+  @join__implements(graph: PRODUCT_2_, interface: "ProductMetadata")
+  @join__type(graph: PRODUCT_1_)
+  @join__type(graph: PRODUCT_2_) {
+  id: ID!
+  createdAt: String!
+  createdBy: User
+}
+
+type DropDownValue implements ProductMetadataValue
+  @join__implements(graph: PRODUCT_1_, interface: "ProductMetadataValue")
+  @join__implements(graph: PRODUCT_2_, interface: "ProductMetadataValue")
+  @join__type(graph: PRODUCT_1_, key: "_fieldId _productId")
+  @join__type(graph: PRODUCT_2_, key: "_fieldId _productId") {
+  _fieldId: ID! @inaccessible
+  _productId: ID! @inaccessible
+  dropDownValue: String!
+  productMetadata: DropDownMetadata!
+}
+
+input join__ContextArgument {
+  name: String!
+  type: String!
+  context: String!
+  selection: join__FieldValue!
+}
+
+scalar join__DirectiveArguments
+
+scalar join__FieldSet
+
+scalar join__FieldValue
+
+enum join__Graph {
+  PRODUCT_1_ @join__graph(name: "product-1", url: "http://alocalhost.com:3000")
+  PRODUCT_2_ @join__graph(name: "product-2", url: "http://alocalhost.com:3000")
+}
+
+scalar link__Import
+
+enum link__Purpose {
+  """
+  `SECURITY` features provide metadata necessary to securely resolve fields.
+  """
+  SECURITY
+
+  """
+  `EXECUTION` features provide metadata necessary for operation execution.
+  """
+  EXECUTION
+}
+
+type Monitor implements Product
+  @join__implements(graph: PRODUCT_1_, interface: "Product")
+  @join__implements(graph: PRODUCT_2_, interface: "Product")
+  @join__type(graph: PRODUCT_1_, key: "id")
+  @join__type(graph: PRODUCT_2_, key: "id") {
+  id: ID!
+  description: String @join__field(graph: PRODUCT_1_)
+  metadata: [ProductMetadataValue!]!
+  resolution: String @join__field(graph: PRODUCT_1_)
+}
+
+type Mouse implements Product
+  @join__implements(graph: PRODUCT_1_, interface: "Product")
+  @join__implements(graph: PRODUCT_2_, interface: "Product")
+  @join__type(graph: PRODUCT_1_, key: "id")
+  @join__type(graph: PRODUCT_2_, key: "id") {
+  id: ID!
+  description: String @join__field(graph: PRODUCT_1_)
+  metadata: [ProductMetadataValue!]!
+  dpi: String @join__field(graph: PRODUCT_1_)
+}
+
+type MultipleOptionMetadata implements ProductMetadata
+  @join__implements(graph: PRODUCT_1_, interface: "ProductMetadata")
+  @join__implements(graph: PRODUCT_2_, interface: "ProductMetadata")
+  @join__type(graph: PRODUCT_1_)
+  @join__type(graph: PRODUCT_2_) {
+  id: ID!
+  createdAt: String!
+  createdBy: User
+}
+
+type MultipleOptionValue implements ProductMetadataValue
+  @join__implements(graph: PRODUCT_1_, interface: "ProductMetadataValue")
+  @join__implements(graph: PRODUCT_2_, interface: "ProductMetadataValue")
+  @join__type(graph: PRODUCT_1_, key: "_fieldId _productId")
+  @join__type(graph: PRODUCT_2_, key: "_fieldId _productId") {
+  _fieldId: ID! @inaccessible
+  _productId: ID! @inaccessible
+  multipleOptionValue: String!
+  productMetadata: MultipleOptionMetadata!
+}
+
+interface Product
+  @join__type(graph: PRODUCT_1_, key: "id", resolvable: true)
+  @join__type(graph: PRODUCT_2_, key: "id", resolvable: true) {
+  id: ID!
+  description: String @join__field(graph: PRODUCT_1_)
+  metadata: [ProductMetadataValue!]!
+}
+
+interface ProductMetadata
+  @join__type(graph: PRODUCT_1_)
+  @join__type(graph: PRODUCT_2_) {
+  id: ID!
+  createdAt: String!
+  createdBy: User
+}
+
+interface ProductMetadataValue
+  @join__type(graph: PRODUCT_1_, key: "_fieldId _productId", resolvable: true)
+  @join__type(graph: PRODUCT_2_, key: "_fieldId _productId", resolvable: true) {
+  _fieldId: ID! @inaccessible
+  _productId: ID! @inaccessible
+  productMetadata: ProductMetadata!
+}
+
+type Query @join__type(graph: PRODUCT_1_) @join__type(graph: PRODUCT_2_) {
+  product(id: ID!): Product @join__field(graph: PRODUCT_1_)
+}
+
+type SingleOptionMetadata implements ProductMetadata
+  @join__implements(graph: PRODUCT_1_, interface: "ProductMetadata")
+  @join__implements(graph: PRODUCT_2_, interface: "ProductMetadata")
+  @join__type(graph: PRODUCT_1_)
+  @join__type(graph: PRODUCT_2_) {
+  id: ID!
+  createdAt: String!
+  createdBy: User
+}
+
+type SingleOptionValue implements ProductMetadataValue
+  @join__implements(graph: PRODUCT_1_, interface: "ProductMetadataValue")
+  @join__implements(graph: PRODUCT_2_, interface: "ProductMetadataValue")
+  @join__type(graph: PRODUCT_1_, key: "_fieldId _productId")
+  @join__type(graph: PRODUCT_2_, key: "_fieldId _productId") {
+  _fieldId: ID! @inaccessible
+  _productId: ID! @inaccessible
+  singleOptionValue: String!
+  productMetadata: SingleOptionMetadata!
+}
+
+type TextProductMetadata implements ProductMetadata
+  @join__implements(graph: PRODUCT_1_, interface: "ProductMetadata")
+  @join__implements(graph: PRODUCT_2_, interface: "ProductMetadata")
+  @join__type(graph: PRODUCT_1_)
+  @join__type(graph: PRODUCT_2_) {
+  id: ID!
+  createdAt: String!
+  createdBy: User
+}
+
+type TextProductValue implements ProductMetadataValue
+  @join__implements(graph: PRODUCT_1_, interface: "ProductMetadataValue")
+  @join__implements(graph: PRODUCT_2_, interface: "ProductMetadataValue")
+  @join__type(graph: PRODUCT_1_, key: "_fieldId _productId")
+  @join__type(graph: PRODUCT_2_, key: "_fieldId _productId") {
+  _fieldId: ID! @inaccessible
+  _productId: ID! @inaccessible
+  textValue: String!
+  productMetadata: TextProductMetadata!
+}
+
+interface User
+  @join__type(graph: PRODUCT_1_, key: "id", resolvable: true)
+  @join__type(
+    graph: PRODUCT_2_
+    key: "id"
+    resolvable: true
+    isInterfaceObject: true
+  ) {
+  email: String @join__field(graph: PRODUCT_1_)
+  id: ID!
+}
